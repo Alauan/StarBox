@@ -1,0 +1,27 @@
+#pragma once
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
+#include <unordered_set>
+#include <unordered_map>
+#include <future>
+#include <iostream>
+#include <vector>
+#include <chrono>
+#include <random>
+#include <cmath>
+#include <memory>
+
+#include "ctpl_stl.h"
+#include "defs.hpp"
+#include "InputHandler.hpp"
+#include "Vector2.hpp"
+#include "Timer.hpp"
+#include "Camera.hpp"
+#include "Planet.hpp"
+#include "QuadTree.hpp"
+#include "Painter.hpp"
+#include "PlanetManager.hpp"
+#include "Creator.hpp"
+#include "CursorMode.hpp"
+#include "Core.hpp"

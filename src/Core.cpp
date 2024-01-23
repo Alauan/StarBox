@@ -30,7 +30,6 @@ void Core::init()
     running = true;
     input_handler = InputHandler::getInstance();
     timer = Timer::getInstance();
-    camera = new Camera();
     painter = Painter::getInstance(window, renderer, camera);
     planet_manager = new PlanetManager();
 
@@ -50,7 +49,15 @@ void Core::initSDL()
         exit(1);
     }
 
-    window = SDL_CreateWindow("SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+    SDL_DisplayMode display_mode;
+    if(SDL_GetCurrentDisplayMode(0, &display_mode) != 0)
+    {
+        std::cout << "SDL could not get display mode! SDL Error: " << SDL_GetError() << std::endl;
+        exit(1);
+    }
+    camera = new Camera(display_mode.w, display_mode.h);
+
+    window = SDL_CreateWindow("StarBox", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, camera->getWindowWidth(), camera->getWindowHeight(), SDL_WINDOW_SHOWN | SDL_WINDOW_FULLSCREEN);
     if (window == NULL)
     {
         std::cout << "Window could not be created! SDL Error: " << SDL_GetError() << std::endl;
@@ -89,7 +96,7 @@ void Core::createFrame()
     input_handler->getInput();
     timer->update();
     cursor_mode->update();
-    planet_manager->update(timer->getDtSeconds());
+    planet_manager->update();
     painter->clearScreen();
 
     if(input_handler->isKeyInState(InputHandler::MOUSE_MIDDLE, InputHandler::PRESSED))

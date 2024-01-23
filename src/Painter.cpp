@@ -41,7 +41,7 @@ void Painter::drawCircle(SDL_Point center, int radius, SDL_Color color)
     if(radius <= 0)
         return;
 
-    if(center.x + radius < 0 || center.x - radius > SCREEN_WIDTH || center.y + radius < 0 || center.y - radius > SCREEN_HEIGHT)
+    if(center.x + radius < 0 || center.x - radius > camera->getWindowWidth() || center.y + radius < 0 || center.y - radius > camera->getWindowHeight())
         return;
     
     SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
@@ -74,7 +74,7 @@ void Painter::drawFilledCircle(SDL_Point center, int radius, SDL_Color color)
     if(radius <= 0)
         return;
 
-    if(center.x + radius < 0 || center.x - radius > SCREEN_WIDTH || center.y + radius < 0 || center.y - radius > SCREEN_HEIGHT)
+    if(center.x + radius < 0 || center.x - radius > camera->getWindowWidth() || center.y + radius < 0 || center.y - radius > camera->getWindowHeight())
         return;
 
     SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
@@ -179,7 +179,7 @@ void Painter::drawPlanet(const Planet *planet)
     double radius = planet->getRadius()/camera->getZoom();
     SDL_Color color = planet->getColor();
 
-    if(position.x > -1 && position.x < SCREEN_WIDTH+1 && position.y > -1 && position.y < SCREEN_HEIGHT+1)
+    if(position.x > -1 && position.x < camera->getWindowWidth()+1 && position.y > -1 && position.y < camera->getWindowHeight()+1)
     {
         if(radius < 0.5)
         {

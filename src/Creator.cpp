@@ -242,9 +242,9 @@ void CosmicDustCreator::update()
     switch (state)
     {
     case JUST_CREATED:
-        for(int i = 0; i < SCREEN_WIDTH; i+= 15)
+        for(int i = 0; i < camera->getWindowWidth(); i+= 15)
         {
-            for(int j = 0; j < SCREEN_HEIGHT; j+= 15)
+            for(int j = 0; j < camera->getWindowHeight(); j+= 15)
             {
                 planet_manager->addPlanet(new Planet(pow(camera->getZoom(), 3), camera->screenToWorld({i, j})));
             }

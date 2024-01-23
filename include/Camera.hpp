@@ -5,7 +5,7 @@
 class Camera
 {
 public:
-    Camera();
+    Camera(int screen_width=1920, int screen_height=1080, double zoom = 1.0);
 
     void setPosition(Vector2 position);
     void move(Vector2 offset);
@@ -20,7 +20,10 @@ public:
     Vector2 screenToWorld(SDL_Point screenPosition) const;
     SDL_Point worldToScreen(Vector2 worldPosition) const;
 
+    int getWindowWidth() const;
+    int getWindowHeight() const;
 private:
     Vector2 position;
     double zoom;
+    int windowWidth, windowHeight;
 };

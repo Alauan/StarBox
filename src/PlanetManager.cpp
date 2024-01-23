@@ -5,6 +5,7 @@ PlanetManager::PlanetManager(int n_threads)
     :thread_pool(n_threads), followed_planet(nullptr), calculation_dt(0), simulation_fps(0), root(nullptr)
 {
     painter = Painter::getInstance();
+    timer = Timer::getInstance();
 }
 
 PlanetManager::~PlanetManager()
@@ -92,8 +93,8 @@ Planet *PlanetManager::getFollowedPlanet(){
     return followed_planet;
 }
 
-void PlanetManager::update(double dt){
-    calculation_dt += dt;
+void PlanetManager::update(){
+    calculation_dt += timer->getDtSeconds();
     
     if(didCalculationsFinnished())
     {
@@ -106,7 +107,7 @@ void PlanetManager::update(double dt){
     else
     {
         for(Planet *planet : planets_to_render)
-            planet->update(dt);
+            planet->update(timer->getDtSeconds());
     }
 }
 
@@ -230,30 +231,6 @@ QuadTree::Node *PlanetManager::createQuadTree(){
     return root;
 }
 
-std::vector<Vector2>* PlanetManager::getPrediction(const Planet *planet, int steps, double dt){
-    std::cout << "getting prediction\n";
-    int initial_thread_amount = thread_pool.size();
-    thread_pool.resize(2);
-    
-    std::vector<Vector2> *prediction = new std::vector<Vector2>();
-    {
-        PlanetManager predictionManager = PlanetManager(initial_thread_amount-2);
-        Planet* prediction_planet = predictionManager.addPlanet(new Planet(*planet));
-        for(Planet *planet : planets){
-            predictionManager.addPlanet(new Planet(*planet));
-        }
-
-        for(int i = steps-2; i < steps; i++){
-            while(!predictionManager.didCalculationsFinnished()){};
-            prediction->push_back(prediction_planet->getPosition());
-            predictionManager.update(dt);
-        }
-    }
-    thread_pool.resize(initial_thread_amount);
-
-    return prediction;
-}
-
 std::unordered_set<Planet*>* PlanetManager::getPlanetsToRenderSet(){
     return &planets_to_render;
 }
@@ -284,3 +261,34 @@ void PlanetManager::drawPlanets() const
         painter->drawPlanet(planet);
     }
 }
+
+
+
+
+
+/*
+std::vector<Vector2>* PlanetManager::getPrediction(const Planet *planet, int steps, double dt){
+    
+    int initial_thread_amount = thread_pool.size();
+    thread_pool.resize(2);
+    
+    std::vector<Vector2> *prediction = new std::vector<Vector2>();
+    {
+        PlanetManager predictionManager = PlanetManager(initial_thread_amount-2);
+        Planet* prediction_planet = predictionManager.addPlanet(new Planet(*planet));
+        for(Planet *planet : planets){
+            predictionManager.addPlanet(new Planet(*planet));
+        }
+
+        for(int i = steps-2; i < steps; i++){
+            while(!predictionManager.didCalculationsFinnished()){};
+            prediction->push_back(prediction_planet->getPosition());
+            predictionManager.update(dt);
+        }
+    }
+    thread_pool.resize(initial_thread_amount);
+
+    return prediction;
+    
+}
+*/

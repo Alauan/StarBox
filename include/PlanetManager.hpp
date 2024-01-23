@@ -9,7 +9,7 @@ public:
     PlanetManager(int n_threads=std::thread::hardware_concurrency());
     ~PlanetManager();
 
-    void update(double dt);
+    void update();
     void render() const;
 
     Planet* addPlanet(Planet *planet);
@@ -22,7 +22,7 @@ public:
     
     Planet *getPlanetPlanetAtPosition(Vector2 position) const;
 
-    std::vector<Vector2>* getPrediction(const Planet *Planet, int steps, double dt);
+    //std::vector<Vector2>* getPrediction(const Planet *Planet, int steps, double dt);
 
     bool isFollowingPlanet() const;
     Planet* getFollowedPlanet();
@@ -48,7 +48,6 @@ private:
     double calculation_dt;
     double simulation_fps;
 
-
     std::vector<Planet*> planets_to_insert;
     std::vector<Planet*> planets_to_remove;
     std::unordered_set<Planet*> planets_to_render;
@@ -57,5 +56,6 @@ private:
     ctpl::thread_pool thread_pool;
 
     Painter *painter;
+    Timer *timer;
 };
 

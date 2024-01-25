@@ -17,12 +17,24 @@ void PlanetCreator::update()
 {
     std::random_device rd;
     SDL_Point pos_diff;
+
+    if(planet_manager->isFollowingPlanet() == false)
+        is_following_planet = false;
+
+    if(is_following_planet)
+        current_planet.setPosition(planet_manager->getFollowedPlanet()->getPosition() + pos_relative_to_followed_planet);
+
     switch (state)
     {
     case JUST_STARTED:
         current_planet.setPosition(camera->screenToWorld(input_handler->getMousePosition()));
-        timer->setTimeWarp(0.1);
+        if(planet_manager->isFollowingPlanet())
+        {
+            pos_relative_to_followed_planet = current_planet.getPosition() - planet_manager->getFollowedPlanet()->getPosition();
+            is_following_planet = true;
+        }
         
+        timer->setTimeWarp(0.1);
         state = GROWING;
         break;
 
@@ -46,15 +58,14 @@ void PlanetCreator::update()
 
     case JUST_CREATED:
         timer->setTimeWarp(1);
-        planet_manager->addPlanet(new Planet(current_planet));
+        planet_manager->addPlanetInRelationToFollowedPlanet(new Planet(current_planet));
 
-        state = IDLE;
+        reset();
         break;
 
     case IDLE:
         if (input_handler->isKeyInState(InputHandler::MOUSE_LEFT, InputHandler::JUST_PRESSED))
         {
-            current_planet = Planet();
             state = JUST_STARTED;
         }
         break;
@@ -86,6 +97,13 @@ void PlanetCreator::render()
     }
 }
 
+void PlanetCreator::reset()
+{
+    is_following_planet = false;
+    current_planet = Planet();
+    state = IDLE;
+}
+
 
 
 GalaxyCreator::GalaxyCreator(Camera *camera, PlanetManager *planet_manager)
@@ -114,13 +132,27 @@ void GalaxyCreator::update()
     std::vector<Planet *> planets_to_remove;
     Planet vacuum = Planet();
     
+    if(planet_manager->isFollowingPlanet() == false)
+        is_following_planet = false;
+
+    if(is_following_planet)
+    {
+        Vector2 followed_pos_diff = planet_manager->getFollowedPlanet()->getPosition() - followed_planet_previous_position;
+        galaxy_center->setPosition(galaxy_center->getPosition() + followed_pos_diff);
+        for(Planet *planet : current_galaxy)
+        {
+            planet->setPosition(planet->getPosition() + followed_pos_diff);
+        }
+    }
 
     switch (state)
     {
     case JUST_STARTED:
-        reset();
         galaxy_center = new Planet(0, camera->screenToWorld(input_handler->getMousePosition()));
         timer->setTimeWarp(0.1);
+
+        if(planet_manager->isFollowingPlanet())
+            is_following_planet = true;
         
         state = GROWING;
         break;
@@ -177,7 +209,7 @@ void GalaxyCreator::update()
     case JUST_CREATED:
         timer->setTimeWarp(1);
         galaxy_center->setVelocity(galaxy_center->getPosition() - camera->screenToWorld(input_handler->getMousePosition()));
-        planet_manager->addPlanet(galaxy_center);
+        planet_manager->addPlanetInRelationToFollowedPlanet(galaxy_center);
 
         for(Planet *planet : current_galaxy)
         {
@@ -187,11 +219,9 @@ void GalaxyCreator::update()
             {
                 planet->setVelocity(planet->getVelocity() + distance.normalized().rotate90() * sqrt(GRAV_CONST*galaxy_center->getMass()/distance.magnitude()));
             }
-            planet_manager->addPlanet(planet);
+            planet_manager->addPlanetInRelationToFollowedPlanet(planet);
         }
         reset();
-
-        state = IDLE;
         break;
 
     case IDLE:
@@ -202,13 +232,9 @@ void GalaxyCreator::update()
     default:
         break;
     }
-}
 
-void GalaxyCreator::reset()
-{
-    current_galaxy.clear();
-    galaxy_center = nullptr;
-    current_radius = 0;
+    if(planet_manager->isFollowingPlanet())
+        followed_planet_previous_position = planet_manager->getFollowedPlanet()->getPosition();
 }
 
 void GalaxyCreator::render()
@@ -223,6 +249,15 @@ void GalaxyCreator::render()
     {
         painter->drawLine(camera->worldToScreen(galaxy_center->getPosition()), input_handler->getMousePosition(), COLOR::GOLDEN_STAR);
     }
+}
+
+void GalaxyCreator::reset()
+{
+    state = IDLE;
+    is_following_planet = false;
+    current_galaxy.clear();
+    galaxy_center = nullptr;
+    current_radius = 0;
 }
 
 
@@ -242,11 +277,11 @@ void CosmicDustCreator::update()
     switch (state)
     {
     case JUST_CREATED:
-        for(int i = 0; i < camera->getWindowWidth(); i+= 15)
+        for(int i = 0; i < camera->getWindowWidth(); i+= 10)
         {
-            for(int j = 0; j < camera->getWindowHeight(); j+= 15)
+            for(int j = 0; j < camera->getWindowHeight(); j+= 10)
             {
-                planet_manager->addPlanet(new Planet(pow(camera->getZoom(), 3), camera->screenToWorld({i, j})));
+                planet_manager->addPlanetInRelationToFollowedPlanet(new Planet(pow(camera->getZoom()/2, 3), camera->screenToWorld({i, j})));
             }
         }
 
@@ -267,6 +302,11 @@ void CosmicDustCreator::update()
 
 void CosmicDustCreator::render(){}
 
+void CosmicDustCreator::reset()
+{
+    state = IDLE;
+}
+
 
 
 Eraser::Eraser(Camera *camera, PlanetManager *planet_manager)
@@ -285,7 +325,7 @@ void Eraser::update()
     {
     case IDLE:
         if(input_handler->isKeyInState(InputHandler::MOUSE_LEFT, InputHandler::JUST_PRESSED))
-        state = ERASING;
+            state = ERASING;
         break;
 
     case ERASING:
@@ -306,4 +346,9 @@ void Eraser::render()
         painter->drawFilledCircle(input_handler->getMousePosition(), radius, COLOR::BLACK);
         painter->drawCircle(input_handler->getMousePosition(), radius, COLOR::WHITE);
     }
+}
+
+void Eraser::reset()
+{
+    state = IDLE;
 }

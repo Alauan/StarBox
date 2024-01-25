@@ -30,6 +30,11 @@ void InputHandler::getInput()
             case SDL_QUIT:
                 quit = true;
                 break;
+            case SDL_KEYDOWN:
+                if(event.key.keysym.sym == SDLK_ESCAPE)
+                    quit = true;
+                break;
+
             case SDL_MOUSEBUTTONDOWN:
                 key_states[(Keys)event.button.button] = States::JUST_PRESSED | States::PRESSED;
                 break;

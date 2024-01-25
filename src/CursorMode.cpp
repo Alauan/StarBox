@@ -31,7 +31,10 @@ CursorMode::~CursorMode()
 void CursorMode::update()
 {
     if (input_handler->isKeyInState(InputHandler::MOUSE_RIGHT, InputHandler::JUST_PRESSED))
+    {
         current_brush = (current_brush + 1) % creators.size();
+        creators[current_brush]->reset();
+    }
 
     creators[current_brush]->update();
 }

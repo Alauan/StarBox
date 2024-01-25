@@ -20,12 +20,13 @@ public:
 
     bool isPlanetInSet(Planet *planet) const;
     
-    Planet *getPlanetPlanetAtPosition(Vector2 position) const;
+    Planet *getPlanetAtPosition(Vector2 position) const;
 
     //std::vector<Vector2>* getPrediction(const Planet *Planet, int steps, double dt);
 
     bool isFollowingPlanet() const;
     Planet* getFollowedPlanet();
+    void addPlanetInRelationToFollowedPlanet(Planet* planet);
 
     std::unordered_set<Planet*>* getPlanetsToRenderSet();
 private:

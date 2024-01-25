@@ -104,9 +104,14 @@ void Core::createFrame()
 
     int scroll = input_handler->getMouseScroll(); 
     if(scroll)
-    {
         camera->zoomOnPoint(-scroll*0.1, input_handler->getMousePosition());
-    }
+
+    if(input_handler->isKeyInState(InputHandler::MOUSE_MIDDLE, InputHandler::JUST_PRESSED))
+        planet_manager->followPlanet(planet_manager->getPlanetAtPosition(camera->screenToWorld(input_handler->getMousePosition())));
+
+    if(planet_manager->isFollowingPlanet())
+        camera->setPosition(planet_manager->getFollowedPlanet()->getPosition());
+
 
     painter->drawFps();
     planet_manager->render();

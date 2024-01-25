@@ -23,9 +23,37 @@
             ],
             "group": {
                 "kind": "build",
+                "isDefault": false
+            },
+            "detail": "Tarefa gerada por Ala1"
+        },
+        {
+            "type": "cppbuild",
+            "label": "C/C++: g++ main.cpp máxima performance",
+            "command": "/usr/bin/g++",
+            "args": [
+                "-fdiagnostics-color=always",
+                "-O3",
+                "-march=native",
+                "${workspaceFolder}/main.cpp",
+                "src/*.cpp",
+                "-lSDL2", 
+                "-lSDL2_image",
+                "-lSDL2_ttf",
+                "-o",
+                "${workspaceFolder}/main.out"
+            ],
+            "options": {
+                "cwd": "${fileDirname}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
                 "isDefault": true
             },
-            "detail": "Tarefa gerada pelo Depurador."
+            "detail": "Tarefa gerada por Ala1"
         }
     ],
     "version": "2.0.0"

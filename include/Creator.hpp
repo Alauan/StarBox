@@ -7,6 +7,7 @@ class Creator
 public:
     virtual void render() = 0;
     virtual void update() = 0;
+    virtual void reset() = 0;
 
     std::string icon_path; 
 };
@@ -18,6 +19,8 @@ public:
     PlanetCreator(Camera *camera, PlanetManager *planet_manager);
     void update();
     void render();
+    void reset();
+
 private:
     enum State
     {
@@ -28,14 +31,18 @@ private:
         IDLE
     };
 
-    State state;
-    Planet current_planet;
     InputHandler *input_handler;
     Timer *timer;
     Camera *camera;
     Painter *painter;
     PlanetManager *planet_manager;
+
+    State state;
+    Planet current_planet;
     double growth_speed;
+
+    bool is_following_planet;
+    Vector2 pos_relative_to_followed_planet;
 };
 
 
@@ -45,8 +52,9 @@ public:
     GalaxyCreator(Camera *camera, PlanetManager *planet_manager);
     void update();
     void render();
-private:
     void reset();
+
+private:
     enum State
     {
         JUST_STARTED,
@@ -58,9 +66,13 @@ private:
     std::unordered_set<Planet *> current_galaxy;
     Planet *galaxy_center;
     State state;
-    int add_new_star_speed;
     double current_radius;
+
+    int add_new_star_speed;
     double radius_growth_speed;
+
+    bool is_following_planet;
+    Vector2 followed_planet_previous_position;
 
     InputHandler *input_handler;
     Timer *timer;
@@ -76,6 +88,7 @@ public:
     CosmicDustCreator(Camera *camera, PlanetManager *planet_manager);
     void update();
     void render();
+    void reset();
 
 private:
     enum State
@@ -98,6 +111,7 @@ public:
     Eraser(Camera* camera, PlanetManager *planet_manager);
     void update();
     void render();
+    void reset();
 
 private:
     enum State

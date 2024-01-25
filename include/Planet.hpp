@@ -62,6 +62,7 @@ public:
     void addAccelerationTowards(double mass, Vector2 position);
 
     bool isCollidingWith(const Planet& other) const;
+    bool isCollidingWith(Vector2 position) const;
 
     Planet operator+(const Planet& p) const;
     Planet &operator=(const Planet& p);

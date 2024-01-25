@@ -94,6 +94,11 @@ bool Planet::isCollidingWith(const Planet& other) const
     return (position - other.position).magnitude() <= radius + other.radius;
 }
 
+bool Planet::isCollidingWith(Vector2 position) const
+{
+    return (this->position - position).magnitude() <= radius;
+}
+
 
 Planet Planet::operator+(const Planet& other) const
 {

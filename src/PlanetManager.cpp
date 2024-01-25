@@ -38,16 +38,6 @@ Planet* PlanetManager::addPlanet(Planet *planet){
     return planet;
 }
 
-void PlanetManager::followPlanet(Planet *planet){
-    if(isPlanetInSet(planet)){
-        followed_planet = planet;
-    }
-    else
-    {
-        throw std::invalid_argument("PlanetManager::followPlanet: planet is not in set");
-    }
-}
-
 void PlanetManager::removePlanet(Planet *planet){
     if(isPlanetInSet(planet))
         planets_to_remove.push_back(planet);
@@ -89,9 +79,43 @@ bool PlanetManager::isPlanetInSet(Planet *planet) const{
     return planets.find(planet) != planets.end();
 }
 
+void PlanetManager::followPlanet(Planet *planet){
+    if(isPlanetInSet(planet) || planet == nullptr){
+        followed_planet = planet;
+    }
+    else
+    {
+        throw std::invalid_argument("PlanetManager::followPlanet: planet is not in set");
+    }
+}
+
 Planet *PlanetManager::getFollowedPlanet(){
     return followed_planet;
 }
+
+bool PlanetManager::isFollowingPlanet() const{
+    return followed_planet != nullptr;
+}
+
+void PlanetManager::addPlanetInRelationToFollowedPlanet(Planet* planet)
+{
+    if(planet == nullptr)
+        throw std::invalid_argument("PlanetManager::addPlanetInRelationToFollowedPlanet: planet is nullptr");
+
+    if(isFollowingPlanet())
+        planet->setVelocity(planet->getVelocity() + followed_planet->getVelocity());
+    addPlanet(planet);
+}
+
+Planet *PlanetManager::getPlanetAtPosition(Vector2 position) const{
+    for(Planet *planet : planets)
+    {
+        if(planet->isCollidingWith(position))
+            return planet;
+    }
+    return nullptr;
+}
+
 
 void PlanetManager::update(){
     calculation_dt += timer->getDtSeconds();
